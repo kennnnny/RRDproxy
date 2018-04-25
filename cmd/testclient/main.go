@@ -14,9 +14,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	//c := http.Client{}
+	c := http.Client{}
 	for i := 0; i < 10; i++ {
-		resp, err := http.Get(os.Args[1])
+		resp, err := c.Get(os.Args[1])
 		if err != nil {
 			fmt.Println(err)
 			return

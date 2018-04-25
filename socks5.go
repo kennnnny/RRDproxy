@@ -180,7 +180,6 @@ func (s *Server) ServeConn(conn net.Conn) error {
 
 func (s *Server) Monitor(tc *tcp.Conn) {
 	for {
-		log.Println("Polling")
 		time.Sleep(100 * time.Second)
 		//Print tcpinfo
 		var o tcpinfo.Info
@@ -193,6 +192,6 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(string(txt))
+		fmt.Println("Polling", string(txt))
 	}
 }
