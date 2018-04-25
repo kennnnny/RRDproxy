@@ -199,12 +199,8 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 
 		txt := string(data)
 		info := &tcpinfo.Info{}
-		err = json.Unmarshal([]byte(txt), &info)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		// fmt.Printf("%+v\n", info)
+		json.Unmarshal([]byte(txt), &info)
+		fmt.Printf("%+v\n", info)
 
 		//analyze data
 		//if condition met
