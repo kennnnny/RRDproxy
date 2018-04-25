@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dt665m/gosocks5"
+	"github.com/kennnnny/RRDproxy"
 )
 
 var (

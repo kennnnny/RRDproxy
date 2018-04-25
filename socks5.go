@@ -117,7 +117,6 @@ func (s *Server) Serve(l net.Listener) error {
 			return err
 		}
 
-		fmt.Println("CONNECTION!")
 		tc, err := tcp.NewConn(conn)
 		if err != nil {
 			log.Fatal(err)
