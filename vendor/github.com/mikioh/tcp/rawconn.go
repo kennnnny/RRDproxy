@@ -42,13 +42,14 @@ func (c *Conn) option(level, name int, b []byte) (int, error) {
 	var operr error
 	var n int
 	fn := func(s uintptr) {
-		fmt.Println("hello starting")
 		n, operr = getsockopt(s, level, name, b)
-		fmt.Println("hello ending")
 	}
+	fmt.Println("hello starting")
 	if err := c.c.Control(fn); err != nil {
 		return 0, err
 	}
+	fmt.Println("hello ending")
+
 	return n, os.NewSyscallError("getsockopt", operr)
 }
 
