@@ -8,6 +8,7 @@ package tcp
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"os"
 	"runtime"
@@ -41,7 +42,9 @@ func (c *Conn) option(level, name int, b []byte) (int, error) {
 	var operr error
 	var n int
 	fn := func(s uintptr) {
+		fmt.Println("hello starting")
 		n, operr = getsockopt(s, level, name, b)
+		fmt.Println("hello ending")
 	}
 	if err := c.c.Control(fn); err != nil {
 		return 0, err
