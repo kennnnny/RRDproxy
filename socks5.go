@@ -3,10 +3,14 @@ package socks5
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"os"
+
+	"github.com/mikioh/tcp"
+	"github.com/mikioh/tcpinfo"
 )
 
 const (
@@ -119,6 +123,22 @@ func (s *Server) Serve(l net.Listener) error {
 func (s *Server) ServeConn(conn net.Conn) error {
 	defer conn.Close()
 	bufConn := bufio.NewReader(conn)
+	tc, err := tcp.NewConn(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//Print tcpinfo
+	var o tcpinfo.Info
+	var b [256]byte
+	i, err := tc.Option(o.Level(), o.Name(), b[:])
+	if err != nil {
+		log.Fatal(err)
+	}
+	txt, err := json.Marshal(i)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(txt))
 
 	// Read the version byte
 	version := []byte{0}
