@@ -5,6 +5,7 @@
 package tcp
 
 import (
+	"fmt"
 	"net"
 	"syscall"
 
@@ -30,6 +31,7 @@ func (c *Conn) SetOption(o tcpopt.Option) error {
 
 // Option returns a socket option.
 func (c *Conn) Option(level, name int, b []byte) (tcpopt.Option, error) {
+	fmt.Println("options!")
 	if !c.ok() || len(b) == 0 {
 		return nil, syscall.EINVAL
 	}
