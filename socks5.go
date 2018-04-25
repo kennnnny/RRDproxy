@@ -181,7 +181,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor")
 	for {
-		time.Sleep(100 * time.Second)
+		time.Sleep(100 * time.Millisecond)
 		//Print tcpinfo
 		var o tcpinfo.Info
 		var b [256]byte
