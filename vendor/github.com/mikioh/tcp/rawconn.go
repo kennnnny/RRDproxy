@@ -8,7 +8,6 @@ package tcp
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"runtime"
@@ -44,11 +43,9 @@ func (c *Conn) option(level, name int, b []byte) (int, error) {
 	fn := func(s uintptr) {
 		n, operr = getsockopt(s, level, name, b)
 	}
-	fmt.Println("hello starting")
 	if err := c.c.Control(fn); err != nil {
 		return 0, err
 	}
-	fmt.Println("hello ending")
 
 	return n, os.NewSyscallError("getsockopt", operr)
 }

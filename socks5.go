@@ -179,7 +179,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 }
 
 func (s *Server) Monitor(tc *tcp.Conn) {
-	fmt.Println("starting monitor")
+	fmt.Println("starting monitor for", tc.RemoteAddr)
 	for {
 		time.Sleep(100 * time.Millisecond)
 		//Print tcpinfo
@@ -189,10 +189,24 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		txt, err := json.Marshal(i)
+
+		data, err := json.Marshal(i)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Polling", string(txt))
+		info := &tcpinfo.Info{}
+		err = json.Unmarshal(data, &info)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%+v\n", info)
+
+		//analyze data
+		//if condition met
+		//os.execute iptables changes
 	}
 }
+
+/*
+
+ */
