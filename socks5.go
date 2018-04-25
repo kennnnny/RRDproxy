@@ -187,17 +187,21 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		var b [256]byte
 		i, err := tc.Option(o.Level(), o.Name(), b[:])
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		data, err := json.Marshal(i)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
+
 		info := &tcpinfo.Info{}
-		err = json.Unmarshal(data, &info)
+		err = json.Unmarshal([]byte(string(data)), &info)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 		fmt.Printf("%+v\n", info)
 
