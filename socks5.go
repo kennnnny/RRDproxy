@@ -197,13 +197,13 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 			return
 		}
 
-		fmt.Println(string(data))
-		// info := &tcpinfo.Info{}
-		// err = json.Unmarshal([]byte(string(data)), &info)
-		// if err != nil {
-		// 	log.Println(err)
-		// 	return
-		// }
+		txt := string(data)
+		info := &tcpinfo.Info{}
+		err = json.Unmarshal([]byte(txt), &info)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		// fmt.Printf("%+v\n", info)
 
 		//analyze data
