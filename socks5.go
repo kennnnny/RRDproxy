@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/mikioh/tcp"
 	"github.com/mikioh/tcpinfo"
@@ -115,7 +116,14 @@ func (s *Server) Serve(l net.Listener) error {
 		if err != nil {
 			return err
 		}
-		go s.ServeConn(conn)
+
+		tc, err := tcp.NewConn(conn)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		go s.Monitor(tc)
+		go s.ServeConn(tc)
 	}
 }
 
@@ -123,22 +131,6 @@ func (s *Server) Serve(l net.Listener) error {
 func (s *Server) ServeConn(conn net.Conn) error {
 	defer conn.Close()
 	bufConn := bufio.NewReader(conn)
-	tc, err := tcp.NewConn(conn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	//Print tcpinfo
-	var o tcpinfo.Info
-	var b [256]byte
-	i, err := tc.Option(o.Level(), o.Name(), b[:])
-	if err != nil {
-		log.Fatal(err)
-	}
-	txt, err := json.Marshal(i)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(txt))
 
 	// Read the version byte
 	version := []byte{0}
@@ -184,4 +176,22 @@ func (s *Server) ServeConn(conn net.Conn) error {
 	}
 
 	return nil
+}
+
+func (s *Server) Monitor(tc *tcp.Conn) {
+	for {
+		time.Sleep(100 * time.Second)
+		//Print tcpinfo
+		var o tcpinfo.Info
+		var b [256]byte
+		i, err := tc.Option(o.Level(), o.Name(), b[:])
+		if err != nil {
+			log.Fatal(err)
+		}
+		txt, err := json.Marshal(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(txt))
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -13,12 +14,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	resp, err := http.Get(os.Args[1])
-	if err != nil {
-		fmt.Println(err)
-		return
+	c := http.Client{}
+	for i := 0; i < 10; i++ {
+		resp, err := c.Get(os.Args[1])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		b, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(b))
+
+		time.Sleep(1 * time.Second)
 	}
 
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(b))
 }
