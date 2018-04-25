@@ -197,6 +197,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 			return
 		}
 
+		fmt.Println(string(data))
 		info := &tcpinfo.Info{}
 		err = json.Unmarshal([]byte(string(data)), &info)
 		if err != nil {
