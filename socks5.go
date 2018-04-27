@@ -180,6 +180,8 @@ func (s *Server) ServeConn(conn net.Conn) error {
 
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr)
+
+	// lastAck := time.Now()
 	for {
 		time.Sleep(100 * time.Millisecond)
 		//Print tcpinfo
@@ -200,11 +202,16 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		txt := string(data)
 		info := &tcpinfo.Info{}
 		json.Unmarshal([]byte(txt), &info)
-		fmt.Printf("%+v\n", info)
+		// fmt.Printf("%+v\n", info)
+
+		//exec.Command("iptables", "-I").Run()
+
+		//iptables -I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492
 
 		//analyze data
 		//if condition met
 		//os.execute iptables changes
+
 	}
 }
 
