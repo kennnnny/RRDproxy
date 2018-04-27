@@ -45,7 +45,7 @@ type MyData struct {
 	RTT         time.Duration `json:"rtt"`
 	RTTVar      time.Duration `json:"rttvar"`
 	SenderMSS   uint          `json:"snd_mss"`
-	State       int           `json:"state"`
+	State       string        `json:"state"`
 	System      struct {
 		PathMTU                 uint          `json:"path_mtu"`           // path maximum transmission unit
 		AdvertisedMSS           uint          `json:"adv_mss"`            // advertised maximum segment size
