@@ -185,6 +185,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	for {
 		time.Sleep(100 * time.Millisecond)
 		//Print tcpinfo
+		var m MyData
 		var o tcpinfo.Info
 		var b [256]byte
 		i, err := tc.Option(o.Level(), o.Name(), b[:])
@@ -192,7 +193,6 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 			log.Println(err)
 			return
 		}
-
 		data, err := json.Marshal(i)
 		if err != nil {
 			log.Println(err)
@@ -200,10 +200,11 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		}
 
 		txt := string(data)
-		info := &tcpinfo.Info{}
+		// info := &tcpinfo.Info{}
+		info := &MyData{}
 		json.Unmarshal([]byte(txt), &info)
-		// fmt.Printf("%+v\n", info)
-
+		fmt.Printf("%+v\n", info)
+		fmt.Println("test", m.LastAckReceived)
 		//exec.Command("iptables", "-I").Run()
 
 		//iptables -I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492
@@ -211,10 +212,63 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		//analyze data
 		//if condition met
 		//os.execute iptables changes
-
 	}
 }
 
-/*
-
- */
+//MyData is OutPut Data Structure
+type MyData struct {
+	Ato     time.Duration `json:"ato"`
+	CongCtl struct {
+		SSthresh          uint `json:"snd_ssthresh"`
+		RcvThresh         uint `json:"rcv_ssthresh"`
+		SenderWindowBytes uint `json:"snd_cwnd_bytes"`
+		SenderWindowSegs  uint `json:"snd_cwnd_segs"`
+	} `json:"cong_ctl"`
+	FlowControl struct {
+		ReceiverWindow uint `json:"rcv_wnd"`
+	} `json:"flow_ctl"`
+	LastDataReceived time.Duration `json:"last_data_rcvd"` // since last data received [FreeBSD and Linux]
+	LastAckReceived  time.Duration `json:"last_ack_rcvd"`  // since last ack received [Linux only]
+	LastDataSent     time.Duration `json:"last_data_sent"` // since last data sent [Linux only]
+	Opts             struct {
+		SACKPermitted bool `json:"sack"`
+		Timestamps    bool `json:"tmstamps"`
+		WindowScale   int  `json:"wscale"`
+	} `json:"opts"`
+	PeerOpts struct {
+		SACKPermitted bool `json:"sack"`
+		Timestamps    bool `json:"tmstamps"`
+		WindowScale   int  `json:"wscale"`
+	} `json:"peer_opts"`
+	ReceiverMSS uint          `json:"rcv_mss"`
+	RTO         time.Duration `json:"rto"`
+	RTT         time.Duration `json:"rtt"`
+	RTTVar      time.Duration `json:"rttvar"`
+	SenderMSS   uint          `json:"snd_mss"`
+	State       string        `json:"state"`
+	System      struct {
+		PathMTU                 uint          `json:"path_mtu"`           // path maximum transmission unit
+		AdvertisedMSS           uint          `json:"adv_mss"`            // advertised maximum segment size
+		CAState                 int           `json:"ca_state"`           // state of congestion avoidance
+		Retransmissions         uint          `json:"rexmits"`            // # of retranmissions on timeout invoked
+		Backoffs                uint          `json:"backoffs"`           // # of times retransmission backoff timer invoked
+		WindowOrKeepAliveProbes uint          `json:"wnd_ka_probes"`      // # of window or keep alive probes sent
+		UnackedSegs             uint          `json:"unacked_segs"`       // # of unack'd segments
+		SackedSegs              uint          `json:"sacked_segs"`        // # of sack'd segments
+		LostSegs                uint          `json:"lost_segs"`          // # of lost segments
+		RetransSegs             uint          `json:"retrans_segs"`       // # of retransmitting segments in transmission queue
+		ForwardAckSegs          uint          `json:"fack_segs"`          // # of forward ack segments in transmission queue
+		ReorderedSegs           uint          `json:"reord_segs"`         // # of reordered segments allowed
+		ReceiverRTT             time.Duration `json:"rcv_rtt"`            // current RTT for receiver
+		TotalRetransSegs        uint          `json:"total_retrans_segs"` // # of retransmitted segments
+		PacingRate              uint64        `json:"pacing_rate"`        // pacing rate
+		ThruBytesAcked          uint64        `json:"thru_bytes_acked"`   // # of bytes for which cumulative acknowledgments have been received
+		ThruBytesReceived       uint64        `json:"thru_bytes_rcvd"`    // # of bytes for which cumulative acknowledgments have been sent
+		SegsOut                 uint          `json:"segs_out"`           // # of segments sent
+		SegsIn                  uint          `json:"segs_in"`            // # of segments received
+		NotSentBytes            uint          `json:"not_sent_bytes"`     // # of bytes not sent yet
+		MinRTT                  time.Duration `json:"min_rtt"`            // current measured minimum RTT; zero means not available
+		DataSegsOut             uint          `json:"data_segs_out"`      // # of segments sent containing a positive length data segment
+		DataSegsIn              uint          `json:"data_segs_in"`       // # of segments received containing a positive length data segment
+	} `json:"sys"`
+}
