@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/mikioh/tcp"
@@ -262,6 +263,14 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		json.Unmarshal([]byte(txt), &info)
 		fmt.Printf("%+v\n", info)
 		//exec.Command("iptables", "-I").Run()
+
+		//lower MSS if retransmit happened
+		switch info.System.Retransmissions {
+		case 0:
+			exec.Command("iptables", "-I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+		default:
+			exec.Command("iptables", "-I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
+		}
 
 		//iptables -I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492
 
