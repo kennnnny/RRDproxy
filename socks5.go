@@ -241,6 +241,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//get su permission
 	s.Sudo()
+	fmt.Println("sudo done!")
 	//delete all rules first
 	deletecmd := exec.Command("iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
@@ -296,11 +297,9 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 
 //Sudo will get su permissioin
 func (s *Server) Sudo() {
-	euid := os.Geteuid()
-	if euid != 0 {
+	if euid := os.Geteuid(); euid != 0 {
 		cmd := exec.Command("sudo", os.Args...)
-		err := cmd.Start()
-		if err != nil {
+		if err := cmd.Start(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}
