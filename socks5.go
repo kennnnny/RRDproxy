@@ -242,7 +242,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 
 	// lastAck := time.Now()
 	for {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		//Print tcpinfo
 		var o tcpinfo.Info
 		var b [256]byte
@@ -266,10 +266,11 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 
 		//lower MSS if retransmit happened
 		switch info.System.Retransmissions {
-		case 0:
-			exec.Command("iptables", "-I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+		case 1:
+			exec.Command("iptables", "-I POSTROUTING -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 		default:
-			exec.Command("iptables", "-I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
+			exec.Command("iptables", "-I POSTROUTING -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
+			fmt.Println("Detect a retransimission! change MSS to 200")
 		}
 
 		//iptables -I FORWARD -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492
