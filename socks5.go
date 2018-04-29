@@ -238,7 +238,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 }
 
 func (s *Server) Monitor(tc *tcp.Conn) {
-	fmt.Println("starting monitor for", tc.RemoteAddr)
+	fmt.Println("starting monitor for", tc.RemoteAddr())
 
 	// lastAck := time.Now()
 	for {
@@ -266,7 +266,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 
 		//lower MSS if retransmit happened
 		switch info.System.Retransmissions {
-		case 1:
+		case 0:
 			exec.Command("iptables", "-I POSTROUTING -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 		default:
 			exec.Command("iptables", "-I POSTROUTING -o ppp0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
