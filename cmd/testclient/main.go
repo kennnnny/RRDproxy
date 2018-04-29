@@ -15,7 +15,7 @@ func main() {
 	}
 
 	c := http.Client{}
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		resp, err := c.Get(os.Args[1])
 		if err != nil {
 			fmt.Println(err)
