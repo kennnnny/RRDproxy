@@ -267,9 +267,9 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		//lower MSS if retransmit happened
 		switch info.System.Retransmissions {
 		case 0:
-			exec.Command("iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+			exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 		default:
-			exec.Command("iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
+			exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
 			fmt.Println("Detect a retransimission! change MSS to 200")
 		}
 		time.Sleep(100 * time.Millisecond)
