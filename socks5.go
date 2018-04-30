@@ -243,7 +243,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	if _, err := fmt.Println("delete all rules"); err != nil {
 		fmt.Println(err)
 	}
-	deletecmd := exec.Command("sudo iptables", "-t mangle -F")
+	deletecmd := exec.Command("sudo", "iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
 	if err := deletecmd.Run(); err != nil {
