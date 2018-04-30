@@ -237,18 +237,18 @@ func (s *Server) ServeConn(conn net.Conn) error {
 	return nil
 }
 
+//Monitor monitors net.conn and shows tcp.infos
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//delete all rules first
-
-	deletecmd := exec.Command("sudo", "iptables", "-t mangle -F")
+	deletecmd := exec.Command("iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
 	if err := deletecmd.Start(); err != nil {
 		fmt.Println("delete", err)
 	}
 	//add a normal TCPMSS rule
-	addcmd := exec.Command("sudo iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+	addcmd := exec.Command("iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 	addcmd.Stderr = os.Stderr
 	addcmd.Stdout = os.Stdout
 	if err := addcmd.Start(); err != nil {
