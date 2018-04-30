@@ -241,7 +241,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//delete all rules first
 	fmt.Println("delete all rules")
-	deletecmd := exec.Command("bash", "-c", "sudo iptables", "-t mangle -F")
+	deletecmd := exec.Command("sudo iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
 	if err := deletecmd.Run(); err != nil {
