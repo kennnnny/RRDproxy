@@ -239,8 +239,6 @@ func (s *Server) ServeConn(conn net.Conn) error {
 
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
-	//get su permission
-	s.Sudo()
 	//delete all rules first
 	fmt.Println("delete all rules")
 	deletecmd := exec.Command("bash", "-c", "sudo iptables", "-t mangle -F")
