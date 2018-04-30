@@ -242,6 +242,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	//get su permission
 	s.Sudo()
 	//delete all rules first
+	fmt.Println("delete all rules")
 	deletecmd := exec.Command("bash", "-c", "sudo iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
@@ -249,6 +250,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		fmt.Println(err)
 	}
 	//add a normal TCPMSS rule
+	fmt.Println("add 1492 rule")
 	addcmd := exec.Command("sudo iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 	addcmd.Stderr = os.Stderr
 	addcmd.Stdout = os.Stdout
@@ -291,6 +293,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		//command that delete rules in iptables: exec.Command("sudo iptables", "-t mangle -F")
 		//command that Replace a rule in iptables(first line):
 		//exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+		// iptables -t mangle -I OUTPUT -p tcp --sport 80 --tcp-flags SYN,ACK SYN,ACK -j TCPWIN --tcpwin-set 1000
 	}
 }
 
