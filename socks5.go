@@ -240,22 +240,19 @@ func (s *Server) ServeConn(conn net.Conn) error {
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//delete all rules first
-	if _, err := fmt.Println("delete all rules"); err != nil {
-		fmt.Println(err)
-	}
+
 	deletecmd := exec.Command("sudo", "iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
 	if err := deletecmd.Run(); err != nil {
-		fmt.Println(err)
+		fmt.Println("delte", err)
 	}
 	//add a normal TCPMSS rule
-	fmt.Println("add 1492 rule")
 	addcmd := exec.Command("sudo iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 	addcmd.Stderr = os.Stderr
 	addcmd.Stdout = os.Stdout
 	if err := addcmd.Run(); err != nil {
-		fmt.Println(err)
+		fmt.Println("add:", err)
 	}
 	for {
 
