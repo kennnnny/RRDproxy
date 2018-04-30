@@ -240,7 +240,9 @@ func (s *Server) ServeConn(conn net.Conn) error {
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//delete all rules first
-	fmt.Println("delete all rules")
+	if _, err := fmt.Println("delete all rules"); err != nil {
+		fmt.Println(err)
+	}
 	deletecmd := exec.Command("sudo iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
