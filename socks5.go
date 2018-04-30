@@ -241,7 +241,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
 	//delete all rules first
-	deletecmd := exec.Command("iptables", "-t mangle", "-F")
+	deletecmd := exec.Command("iptables", "-t", "mangle", "-F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
 	if err := deletecmd.Start(); err != nil {
