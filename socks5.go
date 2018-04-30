@@ -244,14 +244,14 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 	deletecmd := exec.Command("sudo", "iptables", "-t mangle -F")
 	deletecmd.Stderr = os.Stderr
 	deletecmd.Stdout = os.Stdout
-	if err := deletecmd.Run(); err != nil {
-		fmt.Println("delte", err)
+	if err := deletecmd.Start(); err != nil {
+		fmt.Println("delete", err)
 	}
 	//add a normal TCPMSS rule
 	addcmd := exec.Command("sudo iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 	addcmd.Stderr = os.Stderr
 	addcmd.Stdout = os.Stdout
-	if err := addcmd.Run(); err != nil {
+	if err := addcmd.Start(); err != nil {
 		fmt.Println("add:", err)
 	}
 	for {
@@ -291,15 +291,5 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		//command that Replace a rule in iptables(first line):
 		//exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 		// iptables -t mangle -I OUTPUT -p tcp --sport 80 --tcp-flags SYN,ACK SYN,ACK -j TCPWIN --tcpwin-set 1000
-	}
-}
-
-//Sudo will get su permissioin
-func (s *Server) Sudo() {
-	if euid := os.Geteuid(); euid != 0 {
-		cmd := exec.Command("sudo", os.Args...)
-		if err := cmd.Start(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		}
 	}
 }
