@@ -180,7 +180,20 @@ func (s *Server) Serve(l net.Listener) error {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		//delete all rules first
+		deletecmd := exec.Command("iptables", "-t", "mangle", "-F")
+		deletecmd.Stderr = os.Stderr
+		deletecmd.Stdout = os.Stdout
+		if err := deletecmd.Start(); err != nil {
+			fmt.Println("delete", err)
+		}
+		//add a normal TCPMSS rule
+		addcmd := exec.Command("iptables", "-t", "mangle", "-I", "POSTROUTING", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "1400")
+		addcmd.Stderr = os.Stderr
+		addcmd.Stdout = os.Stdout
+		if err := addcmd.Start(); err != nil {
+			fmt.Println("add:", err)
+		}
 		go s.Monitor(tc)
 		go s.ServeConn(tc)
 	}
@@ -240,20 +253,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 //Monitor monitors net.conn and shows tcp.infos
 func (s *Server) Monitor(tc *tcp.Conn) {
 	fmt.Println("starting monitor for", tc.RemoteAddr())
-	//delete all rules first
-	deletecmd := exec.Command("iptables", "-t", "mangle", "-F")
-	deletecmd.Stderr = os.Stderr
-	deletecmd.Stdout = os.Stdout
-	if err := deletecmd.Start(); err != nil {
-		fmt.Println("delete", err)
-	}
-	//add a normal TCPMSS rule
-	addcmd := exec.Command("iptables", "-t", "mangle", "-I", "POSTROUTING", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "1400")
-	addcmd.Stderr = os.Stderr
-	addcmd.Stdout = os.Stdout
-	if err := addcmd.Start(); err != nil {
-		fmt.Println("add:", err)
-	}
+
 	for {
 
 		//Print tcpinfo
@@ -285,7 +285,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 			exec.Command("iptables", "-t", "mangle", "-R", "POSTROUTING", "1", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "200")
 			fmt.Println("Detect a retransimission! change MSS to 200")
 		}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		//command already added in linux's iptables: exec.Command("iptables", "-t mangle -I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
 		//command that delete rules in iptables: exec.Command("sudo iptables", "-t mangle -F")
 		//command that Replace a rule in iptables(first line):
