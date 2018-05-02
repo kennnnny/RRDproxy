@@ -248,7 +248,7 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		fmt.Println("delete", err)
 	}
 	//add a normal TCPMSS rule
-	addcmd := exec.Command("iptables", "-t", "mangle", "-I", "POSTROUTING", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "1492")
+	addcmd := exec.Command("iptables", "-t", "mangle", "-I", "POSTROUTING", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "1400")
 	addcmd.Stderr = os.Stderr
 	addcmd.Stdout = os.Stdout
 	if err := addcmd.Start(); err != nil {
@@ -280,9 +280,9 @@ func (s *Server) Monitor(tc *tcp.Conn) {
 		//lower MSS if retransmit happened
 		switch info.System.Retransmissions {
 		case 0:
-			exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1492")
+			exec.Command("iptables", "-t", "mangle", "-R", "POSTROUTING", "1", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "1400")
 		default:
-			exec.Command("sudo iptables", "-t mangle -R POSTROUTING 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 200")
+			exec.Command("iptables", "-t", "mangle", "-R", "POSTROUTING", "1", "-p", "tcp", "--tcp-flags", "SYN,RST", "SYN", "-j", "TCPMSS", "--set-mss", "200")
 			fmt.Println("Detect a retransimission! change MSS to 200")
 		}
 		time.Sleep(100 * time.Millisecond)
